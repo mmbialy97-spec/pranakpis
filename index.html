@@ -163,19 +163,11 @@ nav button.active{color:var(--sage);border-bottom-color:var(--sage);background:v
 var SCRIPT_URL='https://script.google.com/macros/s/AKfycbyagly65oVRUKA3Ucsh5Y0Qvq5EI7IK0r8-AU__9xrrPxwDXzcazvOY6Gu1VrAQfMZtlw/exec';
 var weeks=[];
 var settings={monthlyRate:200,clubName:'Prana Wellness Club'};
-var _cbc=0;
-function gasCall(params){
-  return new Promise(function(resolve,reject){
-    var cb='_pcb'+(++_cbc);
-    var url=SCRIPT_URL+'?'+params+'&callback='+cb+'&t='+Date.now();
-    var timeout=setTimeout(function(){cleanup();reject(new Error('Timed out'));},20000);
-    function cleanup(){clearTimeout(timeout);delete window[cb];var el=document.getElementById(cb);if(el)el.remove();}
-    window[cb]=function(data){cleanup();resolve(data);};
-    var s=document.createElement('script');
-    s.id=cb;s.src=url;
-    s.onerror=function(){cleanup();reject(new Error('Network error'));};
-    document.head.appendChild(s);
-  });
+async function gasCall(params){
+  var url=SCRIPT_URL+'?'+params+'&t='+Date.now();
+  var res=await fetch(url);
+  var text=await res.text();
+  return JSON.parse(text);
 }
 var fmt=function(n){return n==null||isNaN(n)?'—':n.toLocaleString('en-US');};
 var fmtUSD=function(n){return n==null||isNaN(n)?'—':'$'+n.toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0});};
